@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE
+        mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<!--
+    namespace的属性：映射文件的命名空间，在整个应用必须是唯一的
+    属性值任意填写（如果我们使用的接口编程，我们命名空间必须
+    写成完整的实体类路径）
+
+    select标签：用于查询语句的标签
+    id属性：必填且唯一，建议写成我们接口中的方法名称
+    resultType：返回值类型，该属性也是必填，要求：实体类的
+    属性名称和必须和表中的列名或者别名保持一致。 -->
+<mapper namespace="userMapper">
+    <select id="selectUser" resultType="com.lhk.bean.User">
+        select * from user1
+    </select>
+
+    <insert id="insertUser" parameterType="com.lhk.bean.User">
+        insert into user1 values (#{id},#{name},#{pwd})
+    </insert>
+
+    <update id="updateUser" parameterType="com.lhk.bean.User">
+        update user1 set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="java.lang.Integer">
+        delete from user1 where id = #{id}
+    </delete>
+</mapper>
