@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 引入properties文件，此后可以在当前文件中使用${key}的方式访问properties文件中的value -->
+    <properties resource="db.properties" ></properties>
+    
+    <!--
+        typeAliases : 设置类别名
+        在mybatis的范围中就可以用别名表示一个具体的类型
+    -->
+    <typeAliases>
+        <!--
+            typeAlias : 设置单个实体类型别名
+            type : 起别名的类
+            alias : 别名，不声明该属性时，默认别名为类名且不区分大小写
+        -->
+        <!--  <typeAlias type="com.lhk.bean.User" alias="user"></typeAlias> -->
+        <!--
+            package : 批量设置别名
+            通过包设置类别名，默认以类名作为别名且使用时不区分大小写
+        -->
+        <package name="com.lhk.bean"/>
+    </typeAliases>
+    
+    
+    
+    
+    <!-- 配置数据库环境 -->
+    <!-- 该default属性必填，用于指定默认数据库环境，指定的值必须是存在的 -->
+    <environments default="development">
+        <!-- environment标签：用于配置数据库环境 -->
+        <!-- id属性：在整个应用环境中必须唯一 -->
+        <environment id="development">
+            <!--
+                transactionManager:设置事务管理器
+                type = "JDBC、MANAGED"   设置事务的管理方式
+                JDBC : 表示使用 JDBC 中原生的事务管理方式
+                MANAGED : 被管理的，例如spring
+            -->
+            <transactionManager type="JDBC"/>
+            <!--
+                dataSource:设置数据源：
+                type="POOLED,JNDI,UNPOOLED"  设置数据源类型
+                POOLED: 表示使用数据库连接池
+                UNPOOLED: 表示不使用数据库连接池
+                JNDI: 表示使用上下文中的数据源
+            -->
+            <dataSource type="POOLED">
+                <!-- 数据库驱动 -->
+                <property name="driver" value="${db.driver}"/>
+                <!-- 数据库连接地址 -->
+                <property name="url" value="${db.url}"/>
+                <property name="username" value="${db.username}"/>
+                <property name="password" value="${db.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!-- 加载映射文件 -->
+    <mappers>
+        <!-- 加载单个映射文件 -->
+        <!--    <mapper resource="mapper/usermapper.xml"/>  -->
+        <!--
+            以包的方式批量引入映射文件，需满足两个要求
+            1、mapper接口和映射文件所在的包必须一致
+            2、mapper接口的名字和映射文件的名字必须一致
+        -->
+        <package name="com.lhk.mapper"/>
+    </mappers>
+
+
+</configuration>

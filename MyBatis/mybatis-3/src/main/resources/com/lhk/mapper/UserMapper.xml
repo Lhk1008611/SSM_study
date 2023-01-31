@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE
+        mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<!--
+    namespace的属性：映射文件的命名空间，在整个应用必须是唯一的
+    属性值任意填写（如果我们使用的接口编程，我们命名空间必须
+    写成完整的实体类路径）
+
+    select标签：用于查询语句的标签
+    id属性：必填且唯一，建议写成我们接口中的方法名称
+    resultType：返回值类型，该属性也是必填，要求：实体类的
+    属性名称和必须和表中的列名或者别名保持一致。
+    -->
+<mapper namespace="com.lhk.mapper.UserMapper">
+<!--    &lt;!&ndash;通过id查询 &ndash;&gt;-->
+<!--    <select id="getUserById" resultType="User">-->
+<!--        select * from user1 where id=#{userId}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;通过id查询 &ndash;&gt;-->
+<!--        &lt;!&ndash;数据库中的列名与实体类列名不一致时，解决方式一&ndash;&gt;-->
+<!--    <select id="getUserById" resultType="User">-->
+<!--        select id,name,pwd as password from user1 where id=#{userId}-->
+<!--    </select>-->
+
+    <!--通过id查询 -->
+    <!--数据库中的列名与实体类列名不一致时，解决方式二：resultMap-->
+    <select id="getUserById" resultMap="userMap">
+        select * from user1 where id=#{userId}
+    </select>
+    <resultMap id="userMap" type="user">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="pwd" property="password"></result>
+    </resultMap>
+    <!--通过类类型查询-->
+    <select id="getUserByNameAndPwd" resultType="user">
+        select *from user1 where name=#{name} and pwd=#{pwd}
+    </select>
+    <!--扩展-->
+    <select id="getUserByNameAndPwd1" resultType="user">
+        select *from user1 where name=#{USER.name} and pwd=#{USER.pwd}
+    </select>
+
+    <!--通过Map查询-->
+    <select id="getUserByIdAndName" resultType="user">
+        select *from user1 where id=#{id} and name=#{name}
+    </select>
+
+    <!--更新用户-->
+    <update id="updateUser">
+        update user1 set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+
+    <!--插入用户-->
+    <insert id="addUser">
+        insert into user1(name,pwd) values(#{name},#{pwd})
+    </insert>
+
+    <!--删除用户-->
+    <delete id="deleteUser">
+        delete from user1 where id=#{id}
+    </delete>
+</mapper>
+
