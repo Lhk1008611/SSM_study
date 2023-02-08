@@ -21,7 +21,7 @@
 
 4. 若 mapper 接口方法的参数为实体类类型的参数，**只需要通过 #{} 和 ${} 访问实体类中的属性名，就可以获取相应属性值**
 
-   - 实体类中的属性名与实体类中的成员变量无关，至于实体类中的 getter 和 setter 方法有关
+   - 实体类中的属性名与实体类中的成员变量无关，只与实体类中的 getter 和 setter 方法有关
    - 当实体类没有成员变量，只有 getter 和 setter 方法，也是可以访问到实体类的属性
 
 5. 可以在 mapper 接口方法的参数上设置 @Param 注解，此时 mybatis 会将这些参数按以下两种方式存储在map集合中
@@ -86,4 +86,52 @@
    select * from ${tableName}
    ```
 
-   
+4. 添加功能——获取添加成功后自增的主键
+
+   ```xml
+       <!--
+           添加用户 并获取自增的主键
+           useGeneratedKeys: 表示当前添加功能是否使用自增的主键
+           keyProperty: 将添加成功后自增的主键赋值给实体类参数的属性
+       -->
+       <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+           insert into user1 values(null,#{name},#{pwd})
+       </insert>
+   ```
+
+## 5、自定义映射 resultMap
+
+1. 字段名与实体类属性名不一致的情况，处理映射的方式如下
+
+   1. 可以在 SQL 中给字段设置和属性名一致的别名
+
+   2. 若字段名使用 _ 命名方式，属性使用驼峰命名方式，则可以在 MyBatis 核心配置文件中添加以下配置，可以实现自动将 _ 映射为驼峰
+
+      ```xml
+          <settings>
+              <setting name="mapUnderscoreToCamelCase" value="true"/>
+          </settings>
+      ```
+
+   3. 使用 resultMap 实现自定义映射 
+
+      - id：设置唯一标识
+      - type ：处理映射关系对应的实体类类型
+      - id 标签：处理主键和实体类中属性的映射关系
+      - result 标签：处理普通字段和实体类中属性的映射关系
+      - column：字段名
+      - property：实体类的属性名
+
+      ```xml
+          <select id="getUserById" resultMap="userMap">
+              select * from user1 where id=#{userId}
+          </select>
+          <resultMap id="userMap" type="user">
+              <id column="id" property="id"></id>
+              <result column="name" property="name"></result>
+              <result column="pwd" property="password"></result>
+          </resultMap>
+      ```
+
+      
+
