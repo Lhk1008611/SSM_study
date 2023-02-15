@@ -133,5 +133,49 @@
           </resultMap>
       ```
 
+2. 多对一映射处理
+
+   1. 级联方式处理
+
+      ```xml
+        <resultMap id="orderMap" type="order">
+              <result column="ordertime" property="orderTime"></result>
+              <result column="oid" property="id"></result>
+              <result column="total" property="total"></result>
+              
+              <result column="uid" property="user.id"></result>
+              <result column="name" property="user.name"></result>
+              <result column="pwd" property="user.pwd"></result>
+          </resultMap>
+          
+          <select id="queryOrder" resultMap="orderMap">
+              SELECT *,o.`id` oid FROM user1 u,orders o WHERE o.`uid`=u.`id`
+          </select>
+      ```
+
+   2. 使用 association 标签处理映射
+
+      ```xml
+          <resultMap id="orderMap" type="order">
+              <id column="oid" property="id"></id>
+              <result column="ordertime" property="orderTime"></result>
+              <result column="total" property="total"></result>
+              <!--
+                  association: 处理多对一或一对一映射关系（处理实体类类型属性）
+               -->
+              <association property="user" javaType="user" >
+                  <id column="uid" property="id"></id>
+                  <result column="name" property="name"></result>
+                  <result column="pwd" property="pwd"></result>
+              </association>
+          </resultMap>
+      ```
+
+   3. 分步查询
+
+      ```
+      
+      ```
+
       
 
