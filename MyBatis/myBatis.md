@@ -173,9 +173,57 @@
 
    3. 分步查询
 
-      ```
+      ```xml
+          <!--  第三种：分步查询  -->
+          <resultMap id="queryOrderAndUserStepOneMap" type="order">
+              <id column="id" property="id"></id>
+              <result column="ordertime" property="orderTime"></result>
+              <result column="total" property="total"></result>
+              <!--
+                  association: 处理多对一或一对一映射关系（处理实体类类型属性）
+                  property: 设置需要映射的实体类
+                  select：设置下一步 SQL 查询语句的唯一标识
+                  column：将本步查询出来的字段作为下一步 SQL 查询的条件
+               -->
+              <association
+                      property="user"
+                      select="com.lhk.mapper.UserMapper.queryOrderAndUserStepTwo"
+                      column="uid" >
+              </association>
+          </resultMap>
+      
+          <select id="queryOrderAndUserStepOne" resultMap="queryOrderAndUserStepOneMap">
+              select * from orders
+          </select>
       
       ```
 
-      
+      - 分步查询的优势：可以实现**延迟加载**（懒加载），（用到哪些数据，就只执行对应的SQL语句，按需加载）
+
+        1. 全局配置延迟加载
+
+           ```xml
+                   <!-- 开启延迟加载 -->
+                   <setting name="lazyLoadingEnabled" value="true"/>
+                   <!-- 开启按需加载,默认为false -->
+                   <setting name="aggressiveLazyLoading" value="false"/>
+           ```
+
+        2. 配置某个分布查询延迟加载
+
+           - fetchType="lazy"（本分步查询开启延迟加载）
+           - fetchType="eager"  （本分步查询开启立即加载）
+
+           ```xml
+           <association
+           	property="user"
+           	fetchType="lazy"
+               select="com.lhk.mapper.UserMapper.queryOrderAndUserStepTwo"
+           	column="uid" >
+           </association>
+           ```
+
+3. 一对多映射处理
+
+   
 
