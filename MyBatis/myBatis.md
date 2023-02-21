@@ -119,9 +119,10 @@
       - type ：处理映射关系对应的实体类类型
       - id 标签：处理主键和实体类中属性的映射关系
       - result 标签：处理普通字段和实体类中属性的映射关系
+      - association: 处理多对一或一对一映射关系（处理实体类类型属性）
       - column：字段名
-      - property：实体类的属性名
-
+   - property：实体类的属性名
+      
       ```xml
           <select id="getUserById" resultMap="userMap">
               select * from user1 where id=#{userId}
@@ -225,5 +226,154 @@
 
 3. 一对多映射处理
 
+   1.  使用 collection 标签一步查询
    
+      ```xml
+          <resultMap id="userMap" type="user">
+              <id column="uid" property="id"></id>
+              <result column="name" property="name"></result>
+              <result column="pwd" property="pwd"></result>
+      
+              <!--
+                  一个user对应多个order
+                  collection: 处理一对多或多对多映射关系
+                  ofType： 设置集合中存储的数据的类型
+              -->
+              <collection property="orderList" ofType="order">
+                  <id column="oid" property="id"></id>
+                  <result column="ordertime" property="orderTime"></result>
+                  <result column="total" property="total"></result>
+              </collection>
+          </resultMap>
+      
+          <select id="queryUser" resultMap="userMap">
+              SELECT *,o.`id` oid FROM user1 u,orders o WHERE o.`uid`=u.`id`
+          </select>
+      ```
+   
+   2. 分布查询
+   
+      ```xml
+          <resultMap id="queryUserAndOrderStepOneMap" type="user">
+              <id column="uid" property="id"></id>
+              <result column="name" property="name"></result>
+              <result column="pwd" property="pwd"></result>
+      
+              <collection 
+      			property="orderList"
+                  select="com.lhk.mapper.OrderMapper#queryUserAndOrderStepTwo"
+                  column="id"
+              ></collection>
+          </resultMap>
+      
+          <select id="queryUserAndOrderStepOne" resultType="queryUserAndOrderStepOneMap">
+              select * from user1 where id = #{userId}
+          </select>
+      ```
+
+## 6、动态SQL
+
+1. if 标签
+
+   - test 属性：通过属性 test 中的表达式判断标签中的内容是否可以进行 SQL 拼接
+
+   - 只使用 if 标签会出现的问题：当所有条件不满足时或第一个条件不满足时，就会出现 SQL 语法错误，如下的代码就会出现上述问题
+
+     ```xml
+     <select id="findActiveBlogLike"
+          resultType="Blog">
+       SELECT * FROM BLOG
+       WHERE
+       <if test="state != null">
+         state = #{state}
+       </if>
+       <if test="title != null">
+         AND title like #{title}
+       </if>
+       <if test="author != null and author.name != null">
+         AND author_name like #{author.name}
+       </if>
+     </select>
+     ```
+
+     - 解决方案：
+
+       1. 可以在 where 关键字后面添加上一个恒成立的条件，并给第一个条件加上 AND，如下
+
+          ```xml
+          <select id="findActiveBlogLike"
+               resultType="Blog">
+            SELECT * FROM BLOG
+            WHERE 1=1
+            <if test="state != null">
+              AND state = #{state}
+            </if>
+            <if test="title != null">
+              AND title like #{title}
+            </if>
+            <if test="author != null and author.name != null">
+              AND author_name like #{author.name}
+            </if>
+          </select>
+          ```
+
+       2. 使用 where 标签
+
+          ```xml
+          <select id="findActiveBlogLike"
+               resultType="Blog">
+            SELECT * FROM BLOG
+            <where>
+              <if test="state != null">
+                   state = #{state}
+              </if>
+              <if test="title != null">
+                  AND title like #{title}
+              </if>
+              <if test="author != null and author.name != null">
+                  AND author_name like #{author.name}
+              </if>
+            </where>
+          </select>
+          ```
+
+2. where 标签
+
+   - *where* 元素只会在子元素返回任何内容的情况下才插入 “WHERE” 子句。而且，若子句的开头为 “AND” 或 “OR”，*where* 元素也会将它们去除。（子句末尾的 “AND” 或 “OR” 不能自动去除，可以使用trim 标签自定义 where 标签的功能）
+
+3. trim 标签
+
+   - 属性 prefix、suffix ：在内容前面或后面添加指定内容
+
+   - 属性 prefixOverrides、suffixOverrides：在内容前面或后面移除指定内容
+
+     ```xml
+     <trim prefix="WHERE" prefixOverrides="AND |OR ">
+       ...
+     </trim>
+     ```
+
+4. choose、when、otherwise 标签
+
+   - 类似于 switch case 语句
+
+     ```xml
+     <select id="findActiveBlogLike"
+          resultType="Blog">
+       SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+       <choose>
+         <when test="title != null">
+           AND title like #{title}
+         </when>
+         <when test="author != null and author.name != null">
+           AND author_name like #{author.name}
+         </when>
+         <otherwise>
+           AND featured = 1
+         </otherwise>
+       </choose>
+     </select>
+     ```
+
+     
 
