@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties" ></properties>
+    
+    <settings>
+        <!-- 设置驼峰命名 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="LOG4J"/>
+        <!-- 开启延迟加载 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 开启按需加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+
+    <!-- 类别名 -->
+    <typeAliases>
+        <!-- 单个设置 -->
+        <!--  <typeAlias type="com.lhk.bean.User" alias="user"></typeAlias> -->
+        <!-- 批量设置 -->
+        <!-- 以类名作为别名 使用时不区分大小写-->
+        <package name="com.lhk.pojo"/>
+    </typeAliases>
+
+
+    <!--注册类型处理器-->
+    <typeHandlers>
+        <typeHandler handler="com.lhk.handler.DateTypeHandler"></typeHandler>
+    </typeHandlers>
+
+
+    <!-- 配置数据库环境 -->
+    <!-- 该default属性必填，指定的值必须是存在的 -->
+    <environments default="development">
+        <!-- environment标签：用于配置数据库环境 -->
+        <!-- id属性：在整个应用环境中必须唯一 -->
+        <environment id="development">
+            <!-- 事务管理器:JDBC、Manage -->
+            <transactionManager type="JDBC"/>
+            <!-- 数据源：POOLED,JNDI,UNPOOLED -->
+            <dataSource type="POOLED">
+                <!-- 数据库驱动 -->
+                <property name="driver" value="${driver}"/>
+                <!-- 数据库连接地址 -->
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!-- 加载映射文件 -->
+    <mappers>
+        <!-- 加载映射文件 -->
+    <mapper resource="mapper/usermapper.xml"/>
+    <mapper resource="mapper/ordermapper.xml"></mapper>
+    </mappers>
+
+
+
+
+</configuration>

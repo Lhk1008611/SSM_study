@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE
+        mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<!--
+    namespace的属性：映射文件的命名空间，在整个应用必须是唯一的
+    属性值任意填写（如果我们使用的接口编程，我们命名空间必须
+    写成完整的实体类路径）
+
+    select标签：用于查询语句的标签
+    id属性：必填且唯一，建议写成我们接口中的方法名称
+    resultType：返回值类型，该属性也是必填，要求：实体类的
+    属性名称和必须和表中的列名或者别名保持一致。 -->
+<mapper namespace="com.lhk.mapper.OrderMapper">
+    <!--处理多对一映射-->
+    <!--  第一种：级联方式  -->
+    <!--
+    <resultMap id="orderMap" type="order">
+    <result column="ordertime" property="orderTime"></result>
+    <result column="oid" property="id"></result>
+    <result column="total" property="total"></result>
+
+    <result column="uid" property="user.id"></result>
+    <result column="name" property="user.name"></result>
+    <result column="pwd" property="user.pwd"></result>
+    </resultMap>
+    -->
+
+    <!--  第二种：通过 association 处理 -->
+    <resultMap id="orderMap" type="order">
+        <id column="oid" property="id"></id>
+        <result column="ordertime" property="orderTime"></result>
+        <result column="total" property="total"></result>
+        <!--
+            association: 处理多对一或一对一映射关系（处理实体类类型属性）
+         -->
+        <association property="user" javaType="user" >
+            <id column="uid" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="pwd" property="pwd"></result>
+        </association>
+    </resultMap>
+
+    <select id="queryOrder" resultMap="orderMap">
+        SELECT *,o.`id` oid FROM user1 u,orders o WHERE o.`uid`=u.`id`
+    </select>
+
+    <!--  第三种：分步查询  -->
+    <resultMap id="queryOrderAndUserStepOneMap" type="order">
+        <id column="id" property="id"></id>
+        <result column="ordertime" property="orderTime"></result>
+        <result column="total" property="total"></result>
+        <!--
+            association: 处理多对一或一对一映射关系（处理实体类类型属性）
+            property: 设置需要映射的实体类
+            select：设置下一步 SQL 查询语句的唯一标识
+            column：将本步查询出来的字段作为下一步 SQL 查询的条件
+         -->
+        <association
+                property="user"
+                fetchType="lazy"
+                select="com.lhk.mapper.UserMapper.queryOrderAndUserStepTwo"
+                column="uid" >
+        </association>
+    </resultMap>
+
+    <select id="queryOrderAndUserStepOne" resultMap="queryOrderAndUserStepOneMap">
+        select * from orders
+    </select>
+
+
+    <select id="queryUserAndOrderStepTwo" resultType="order">
+        select * from orders where uid = #{userId}
+    </select>
+
+</mapper>

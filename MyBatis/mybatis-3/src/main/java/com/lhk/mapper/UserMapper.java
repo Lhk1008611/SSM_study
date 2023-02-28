@@ -34,4 +34,7 @@ public interface UserMapper {
     //删除用户
     //根据id删除用户
     public int deleteUser(int id);
+
+    //添加用户 并获取自增的主键
+    void inserUser(User user);
 }

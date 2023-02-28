@@ -122,7 +122,7 @@
       - association: 处理多对一或一对一映射关系（处理实体类类型属性）
       - column：字段名
    - property：实体类的属性名
-      
+     
       ```xml
           <select id="getUserById" resultMap="userMap">
               select * from user1 where id=#{userId}
@@ -375,5 +375,171 @@
      </select>
      ```
 
-     
+5. foreach 标签
 
+   - 使用 foreach 标签可以实现一些批量操作
+   - collection ：设置要循环的数组或集合
+   - item ：表示数组中的某一条数据
+   - separator ： 设置每次循环的数据之间的分隔符
+   - open ： 循环的所有内容以什么符号开始
+   - close ： 循环的所有内容以什么符号结束
+
+   ```xml
+   <select id="selectPostIn" resultType="domain.blog.Post">
+     SELECT *
+     FROM POST P
+     WHERE ID in
+     <foreach item="item" index="index" collection="list"
+         open="(" separator="," close=")">
+           #{item}
+     </foreach>
+   </select>
+   ```
+
+6. SQL 标签
+
+   - 用于记录 SQL 片段
+
+     ```xml
+         <!-- sql片段 -->
+         <sql id="if-title-author">
+             <if test="title !=null">
+                 title=#{title}
+             </if>
+             <if test="author != null">
+                 and author=#{author}
+             </if>
+         </sql>
+     
+     ```
+
+   - 使用 include 标签引入 SQL 片段
+
+     ```xml
+         <select id="queryBlogIf" parameterType="map" resultType="blog">
+             select * from mybatisdb.blog
+             <where>
+                 /*包含sql片段*/
+                 <include refid="if-title-author"></include>
+             </where>
+     
+         </select>
+     ```
+
+## 7、MyBatis 缓存
+
+1. 一级缓存
+
+   - mybatis 的一级缓存是默认开启的
+
+   - 一级缓存是 SqlSession 级别的 ，通过同一个 SqlSession 查询数据数据会被缓存，下次再次通过该SqlSession 查询相同的数据则直接从缓存中获取
+
+   - 一级缓存失效情况
+
+     1. 不同的 SqlSession  对应不同的一级缓存
+
+     2. 同一个 SqlSession 但是查询条件不同
+
+     3. 同一个 SqlSession 两次查询期间执行了任何一次增删改操作（增删改会改变数据库的数据）
+
+     4. 同一个 SqlSession 两次查询期间手动清空缓存
+
+        ```Java
+                SqlSession sqlSession = MybatisUtils.getSqlSession();
+                sqlSession.clearCache();//手动清空缓存
+        ```
+
+        
+
+2. 二级缓存
+
+   - 二级缓存是 SqlSessionFactory 级别的 ，通过同一个 SqlSessionFactory 创建的SqlSession 查询数据数据会被缓存，下次再次通过该SqlSession 查询相同的数据则直接从缓存中获取
+
+   - 开启二级缓存
+
+     ````xml
+     # 只需要在 SQL 映射文件中添加 cache 标签
+     <cache/>
+     ````
+
+     - 全局配置属性：```cacheEnabled```
+       - 全局性地开启或关闭所有映射器配置文件中已配置的任何缓存
+
+   - 二级缓存是事务性的，所以二级缓存必须在 SqlSession 关闭或提交后才会生效
+
+   - 二级缓存失效
+
+     - 两次查询期间执行了任何一次增删改操作
+
+   - 二级缓存配置
+
+     ```xml
+     <cache
+       eviction="FIFO"
+       flushInterval="60000"
+       size="512"
+       readOnly="true"/>
+     ```
+
+     - eviction：缓存清除策略
+       1. `LRU` – 最近最少使用：移除最长时间不被使用的对象。
+       2. `FIFO` – 先进先出：按对象进入缓存的顺序来移除它们。
+       3. `SOFT` – 软引用：基于垃圾回收器状态和软引用规则移除对象。
+       4. `WEAK` – 弱引用：更积极地基于垃圾收集器状态和弱引用规则移除对象。
+     - flushInterval：缓存刷新间隔，毫秒数，默认情况是不设置，也就是没有刷新间隔，缓存仅仅会在调用语句时刷新
+     - size：引用数目，默认值是 1024
+     - readOnly：
+       - true：只读，只读的缓存会给所有调用者返回缓存对象的相同实例，因此这些对象不能被修改。这就提供了可观的性能提升。
+       - false：可读写，而可读写的缓存会（通过序列化）返回缓存对象的拷贝。 速度上会慢一些，但是更安全，因此默认值是 false。
+
+3. mybatis 的缓存查询顺序
+
+   - 二级缓存 ----> 一级缓存 ----> 数据库
+     1. 先查询二级缓存，因为可能会有其他程序查询的数据存在二级缓存中，可以直接使用
+     2. 二级缓存未命中，再查询一级缓存
+     3. 一级缓存未命中，则查询数据库
+     4. SqlSession 关闭或提交后，一级缓存中的数据会写入二级缓存
+
+4. 使用自定义缓存或第三方缓存方案
+
+   ```xml
+   <cache type="com.domain.something.MyCustomCache"/>
+   ```
+
+   - 可以通过实现自定义的缓存，或为其他第三方缓存方案创建适配器，来完全覆盖缓存行为
+   - 第三方缓存方案：ehcache ....
+
+# 8、Mybatis 的逆向工程
+
+- 根据数据库表，反向生成以下资源
+  1. Java实体类
+  2. mapper接口
+  3. mapper映射文件
+- 参考：[058-MyBatis逆向工程之清晰简洁版_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Ya411S7aT?p=58&spm_id_from=pageDriver)
+
+# 9、分页插件
+
+- 参考：[060-分页功能分析_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Ya411S7aT?p=60&spm_id_from=pageDriver)
+
+- 逻辑：
+
+  - pageSize：每页显示条数
+
+  - pageNum：当前页的页码
+
+  - index：当前页的起始索引，从 0 开始
+
+    - index = (pageNum - 1) * pageSize
+
+  - count：总记录数
+
+  - totalPage：总页数
+
+    ````java
+    totalPage = count / pageSize;
+    if( count % pageSize !=0 ){
+        totalPage  +=1;
+    }
+    ````
+
+- 分页插件：PageHelper

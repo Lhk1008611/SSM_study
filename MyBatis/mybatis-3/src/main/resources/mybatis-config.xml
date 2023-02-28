@@ -4,7 +4,7 @@
 <configuration>
     <!-- 引入properties文件，此后可以在当前文件中使用${key}的方式访问properties文件中的value -->
     <properties resource="db.properties" ></properties>
-    
+
     <!--
         typeAliases : 设置类别名
         在mybatis的范围中就可以用别名表示一个具体的类型
