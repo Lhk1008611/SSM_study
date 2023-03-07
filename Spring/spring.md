@@ -412,14 +412,16 @@
 ## 4. bean 的生命周期
 
 - bean 的生命周期
+
   1. 实例化，执行无参构造方法
   2. 依赖注入，执行相关 set 方法
   3. 初始化 ，需要通过 bean 标签的 init-method 属性指定初始化方法
   4. 销毁，需要通过 bean 标签的 destroy-method 属性指定销毁方法，在 ioc 容器关闭时执行销毁方法
+     - 若 bean 是单例的，则生命周期的前三个步骤会在获取 ioc 容器时执行
+     - 若 bean 是多例的，则生命周期的前三个步骤会在获取 bean 对象时执行
 
-- 若 bean 是单例的，则生命周期的前三个步骤会在获取 ioc 容器时执行
-- 若 bean 是多例的，则生命周期的前三个步骤会在获取 bean 对象时执行
 - bean 的具体生命周期
+
   1. bean 对象创建（调用无参构造）
   2. 给 bean 对象设置属性
   3. bean 对象初始化之前操作（由 bean 的后置处理器负责）
@@ -428,3 +430,77 @@
   6. bean 对象就绪可以使用
   7. bean 对象销毁，需要通过 bean 标签的 destroy-method 属性指定销毁方法
   8. ioc 容器关闭
+
+- 后置处理器（了解）
+
+  ```java
+  package com.lhk.pojo;
+  
+  import org.springframework.beans.BeansException;
+  import org.springframework.beans.factory.config.BeanPostProcessor;
+  
+  public class MyBeanPostProcessor implements BeanPostProcessor {
+  
+      //bean 对象初始化之前操作
+      @Override
+      public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+          return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
+      }
+  
+      //bean 对象初始化之后操作
+      @Override
+      public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+          return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
+      }
+  }
+  
+  ```
+
+  - 需要将后置处理器配置到 ioc 容器中，且后置处理器是针对所有的 bean 都生效，即所有的 bean 都会执行后置处理器的额外操作
+
+    ```xml
+            <bean id="myBeanPostProcessor" class="com.lhk.pojo.MyBeanPostProcessor"></bean>
+    ```
+
+    
+
+
+
+## FactoryBean
+
+- FactoryBean 是spring 提供的一种整合第三方框架的常用机制
+
+  ```java
+  package com.lhk.factory;
+  
+  import com.lhk.pojo.User;
+  import org.springframework.beans.factory.FactoryBean;
+  
+  public class UserFactoryBean implements FactoryBean<User> {
+      @Override
+      public User getObject() throws Exception {
+          return new User();
+      }
+  
+      @Override
+      public Class<?> getObjectType() {
+          return User.class;
+      }
+  }
+  
+  ```
+
+  - 将 FactoryBean 配置为一个 bean 时，是直接将 getObject() 方法返回的对象交给 ioc 容器管理，这样省去了中间繁琐的创建对象的过程
+
+    ```xml
+            <!-- 直接拿到 User 类型的 bean -->
+            <bean id="userFactoryBean" class="com.lhk.factory.UserFactoryBean"></bean>
+    ```
+
+
+
+## 基于 xml 的自动装配
+
+- 自动装配：根据指定的策略，在 ioc 容器中自动匹配某一个 bean 注入到指定 bean 中的类类型或接口类型依赖
+
+ 
