@@ -1,3 +1,5 @@
+
+
 ## 1. IOC 容器
 
 - ioc：inversion of control 反转控制（思想）
@@ -466,7 +468,7 @@
 
 
 
-## FactoryBean
+## 5. FactoryBean
 
 - FactoryBean 是spring 提供的一种整合第三方框架的常用机制
 
@@ -499,8 +501,75 @@
 
 
 
-## 基于 xml 的自动装配
+## 6. 基于 xml 的自动装配
 
 - 自动装配：根据指定的策略，在 ioc 容器中自动匹配某一个 bean 注入到指定 bean 中的类类型或接口类型依赖
 
+- 自动装配策略  ( autowire )
+
+  1. byName：根据属性的属性名匹配 bean 注入到属性中
+
+     ```xml
+         <bean id="userController" class="com.lhk.controller.UserController" autowire="byName"></bean>
+     
+         <bean id="userService" class="com.lhk.service.impl.UserServiceImpl" autowire="byName"></bean>
+     
+         <bean id="userDao" class="com.lhk.dao.impl.UserDaoImpl" autowire="byName"></bean>
+     ```
+
+     ![image-20230308204826601](C:\Users\lhk\AppData\Roaming\Typora\typora-user-images\image-20230308204826601.png)
+
+  2. byType：根据属性的类型匹配 bean 注入到属性中
+
+     - 根据类型自动装配需要满足 bean 唯一，才能注入成功
+
+     ```xml
+         <bean id="userController" class="com.lhk.controller.UserController" autowire="byType"></bean>
+     
+         <bean id="userService" class="com.lhk.service.impl.UserServiceImpl" autowire="byType"></bean>
+     
+         <bean id="userDao" class="com.lhk.dao.impl.UserDaoImpl" autowire="byType"></bean>
+     ```
+
+  3. no：不自动装配，使用默认值
+
+  4. default：不自动装配，使用默认值
+
  
+
+## 7. 基于注解的 bean 管理
+
+- 标记与扫描
+
+  - 注解
+    - 注解本身不能执行具体功能，仅仅用于标记，具体功能是框架检测到有注解标记的位置，然后针对这个位置按照注解标记的功能，执行相应的 Java 代码实现对应的功能 
+  - 扫描
+    - spring 通过扫描的方式检测注解标记的地方，然后根据注解进行后续的操作
+
+- 标识组件的常用注解
+
+  - @Component：标识为普通组件 (bean)
+  - @Controller：标识为控制层组件 (bean)
+  - @Service：标识为业务层组件 (bean)
+  - @Repository：标识为持久层组件 (bean)
+    - 这四个注解功能一致，不通过的名称是为了让开发者更容易分辨组件的作用，提高代码的可读性
+
+- 配置组件扫描
+
+  ```xml
+      <!-- 配置组件扫描 -->
+      <context:component-scan base-package="com.lhk"></context:component-scan>
+  ```
+
+  - 子标签
+
+    - context:exclude-filter：扫描时排除某些包或者标签
+    - context:include-filter：扫描时只扫描某些包或者标签，需要 ` use-default-filters="false"`
+
+    ```xml
+        <context:component-scan base-package="com.lhk" use-default-filters="false">
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
+    ```
+
+    
