@@ -548,10 +548,10 @@
 
 - 标识组件的常用注解
 
-  - @Component：标识为普通组件 (bean)
-  - @Controller：标识为控制层组件 (bean)
-  - @Service：标识为业务层组件 (bean)
-  - @Repository：标识为持久层组件 (bean)
+  - `@Component`：标识为普通组件 (bean)
+  - `@Controller`：标识为控制层组件 (bean)
+  - `@Service`：标识为业务层组件 (bean)
+  - `@Repository`：标识为持久层组件 (bean)
     - 这四个注解功能一致，不通过的名称是为了让开发者更容易分辨组件的作用，提高代码的可读性
 
 - 配置组件扫描
@@ -572,4 +572,45 @@
         </context:component-scan>
     ```
 
-    
+- 基于注解的 bean 的 id
+
+  - 默认 id 为类的小驼峰，即类名首字母小写（class：UserController  id：userController）
+
+  - 通过标识注解的 value 属性值来自定义 bean 的 id 
+
+    ```java
+    @Controller("userController")
+    ```
+
+- 基于注解的自动装配
+
+  - `@Autowired`： 自动装配
+
+  - `@Autowired`可以标识的位置：
+
+    1. 标识在成员变量上，此时可以不用写 set 方法
+    2. 标识在 set 方法上
+    3. 标识在为当前成员变量赋值的有参构造上
+
+  - `@Autowired`注解的工作流程：
+
+    - 默认通过 byType 的方式，在 IOC 容器中通过类型匹配某个 bean 为属性赋值
+
+    - 若有多个类型匹配的 bean ，此时会通过 byName 的方式实现自动装配
+
+    - 添加`@Qualifier`注解指定 bean 的 id 进行自动装配
+
+      ```java 
+          @Autowired
+          @Qualifier("userServiceImpl")
+          private UserService userService;
+      ```
+
+    - `@Autowired(required = true)`：表示必须完成自动装配
+
+    - `@Autowired(required = false)`：表示若无法完成自动装配 bean，则使用属性默认值
+
+## 8. AOP
+
+
+
