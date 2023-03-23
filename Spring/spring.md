@@ -1,5 +1,3 @@
-
-
 ## 1. IOC 容器
 
 - ioc：inversion of control 反转控制（思想）
@@ -634,11 +632,11 @@
     - 横切关注点：非核心业务
     - 通知
       - 每一个横切关注点都需要写一个方法来实现，这样的方法就叫通知方法
-        - 前置通知
-        - 返回通知
-        - 异常通知
-        - 后置通知
-        - 环绕通知
+        - 前置通知：在目标方法之前执行
+        - 返回通知：在目标方法返回值之后执行
+        - 异常通知：在目标方法 catch 子句中执行
+        - 后置通知：在目标方法 finally 子句中执行
+        - 环绕通知：
     - 切面
       - 封装通知方法的类
     - 目标
@@ -649,4 +647,286 @@
       - 抽取横切关注点的位置
     - 切入点
       - 定位连接点的方式（切入点表达式）
+  - 作用：
+    - 简化代码：把方法中固定位置的代码抽取出来，让被抽取的方法更专注于自己的核心功能，提高内聚性
+    - 代码增强：将切面中的通知方法切入到指定目标方法的指定位置，可以在不改变原代码的基础上实现代码增强
+  
+- 基于注解的 AOP
 
+  - AspectJ：实现 AOP 的具体方式
+
+    - AspectJ：本质上是静态代理，不会自动生成代理类，而是将代理逻辑"织入"到目标类编译的字节码文件，达到最终的实现是动态的。、
+    - weaver：织入器。
+    - spring 只是借用了 AspectJ 中的注解
+
+  - 导入依赖
+
+    ```xml
+        <dependency>
+          <groupId>org.aspectj</groupId>
+          <artifactId>aspectjweaver</artifactId>
+          <version>1.8.4</version>
+        </dependency>
+    ```
+
+  - 基于注解的Aop开发步骤
+
+    1. 创建目标接口和目标类（内部有切点）
+
+    2. 创建切面类（内部有增强方法）
+
+    3. 将目标类和切面类的对象创建权交给spring
+
+       - `@Component`：标识为一个注解，交给 ioc 管理
+
+       - `@Aspect`：标注当前MyAspect是一个切面
+
+    4. 在切面中使用注解配置织入关系
+
+       - 切入点表达式：`execution(* com.lhk.aopAnno.*.*(..))`
+
+         - 语法
+
+           - `execution([访问修饰符] 返回值类型 包名.类名.方法名(参数))`
+           - 访问修饰符可以不写
+           - 返回值类型、包名、类名、方法名可以使用 * 代表任意
+           - 包名与类名之间一个点 . 代表当前包下的类，两个点 .. 表示当前包及其子包下的类
+           - 参数列表可以使用两个点 .. 表示任意个数，任意类型的参数列表
+
+         - `@Pointcut`: 切点表达式的抽取，实现重用切入点表达式
+
+           ```java
+           /**
+            * 切点表达式的抽取
+            * 定义一个方法，在该方法上使用@Pointcut注解定义切点表达式
+            * 然后在增强注解中进行引用
+            */
+           @Pointcut("execution(* com.lhk.aopAnno.*.*(..))")
+           public void myPointCut(){ }
+           ```
+
+       - `@Before`: 将方法标识为前置通知
+       - `@AfterReturning`: 将方法标识为返回通知
+       - `@AfterThrowing`: 将方法标识为异常通知
+       - `@After`: 将方法标识为后置通知
+       - `@Around`: 将方法标识为环绕通知
+
+    5. 在配置文件中开启 组件扫描 和 自动代理
+
+       - 开启组件扫描
+
+         ```xml
+          <!--配置组件扫描-->
+         <context:component-scan base-package="com.lhk.aopAnno"></context:component-scan>
+         ```
+
+       - 开启基于注解的 AOP 功能
+
+         ```xml
+         <!--配置aop的自动代理-->
+         <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+         ```
+
+  - 切面的优先级
+
+    - `@Order(1)`: 设置切面优先级
+      - value 属性的值越小优先级越高
+
+- 基于 XML 的 AOP
+
+  ```xml
+      <!--目标对象-->
+      <bean id="target" class="com.lhk.aop.Target"></bean>
+  
+      <!--切面对象-->
+      <bean id="myAspect" class="com.lhk.aop.MyAspect"></bean>
+  
+      <!--配置织入: 告诉Spring框架 哪些方法需要进行哪些增强-->
+      <!--需要配置aop命名空间-->
+      <aop:config>
+          <!--声明切面-->
+          <aop:aspect ref="myAspect" order="1">
+              <!--抽取切点表达式-->
+              <aop:pointcut id="myPointcut" expression="execution(* com.lhk.aop.*.*(..))"/>
+              <!--
+              aop:before ： 前置增强（通知）
+              aop:after-returning ：后置增强（通知）
+              aop:around method ：环绕增强（通知）
+              aop:after-throwing ： 异常抛出通知（增强）
+              aop:after ： 最终通知（增强）
+              -->
+              <aop:before method="before" pointcut-ref="myPointcut"></aop:before>
+              <aop:after-returning method="afterReturning" pointcut-ref="myPointcut"></aop:after-returning>
+              <aop:after-throwing method="afterThrowing" pointcut-ref="myPointcut"></aop:after-throwing>
+              <aop:after method="afterReturning" pointcut-ref="myPointcut"></aop:after>
+              <aop:around method="around" pointcut-ref="myPointcut"></aop:around>
+          </aop:aspect>
+      </aop:config>
+  ```
+
+- 声明式事务
+
+  - JdbcTemplate
+
+    - 依赖
+
+      ```xml
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.0.5.RELEASE</version>
+          </dependency>
+      ```
+
+    - 交给 IOC 容器管理
+
+      ```xml
+          <!--加载properties文件-->
+          <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+      
+          <!--2.配置数据源对象-->
+          <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+              <property name="driverClass" value="${jdbc.driver}"></property>
+              <property name="jdbcUrl" value="${jdbc.url}"></property>
+              <property name="user" value="${jdbc.user}"></property>
+              <property name="password" value="${jdbc.password}"></property>
+          </bean>
+      
+          <!--3.配置JdbcTemplate对象-->
+          <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+              <property name="dataSource" ref="dataSource"></property>
+          </bean>
+      ```
+    
+  - Junit4
+
+    - 依赖
+
+      ```xml
+              <dependency>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-test</artifactId>
+                  <version>5.3.13</version>
+                  <scope>test</scope>
+              </dependency>
+      ```
+
+    - 指定当前测试类在 spring 的测试环境运行，可以使用注入的方式直接获取 IOC 容器中的 bean
+
+      ```java
+      @RunWith(value = SpringJUnit4ClassRunner.class)
+      @ContextConfiguration("classpath:applicationContext.xml")//加载 spring 配置文件
+      ```
+
+  - 编程式事务
+
+    - 事务相关的操作全通关自己编写代码来实现
+      - 细节没有被屏蔽，具体操作过程中，所有细节都需要程序员自己来完成，比较繁琐
+      - 代码复用性不高，
+
+  - 声明式事务
+
+    - 具体事务控制交给框架，开发人员只需要在配置文件中进行简单配置即可
+      - 提高开发效率
+      - 消除冗余的代码
+      - 框架会综合考虑相关领域中在实际开发过程中可能会遇到的各种问题，进行了健壮性、性能等各个方面的优化
+
+  - 基于注解的声明式事务
+
+    - 默认情况下，MySQL 一条 sql 独占一个事务且自动提交
+
+    - 配置
+
+      ```xml
+          <!--配置平台事务管理器-->
+          <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref="dataSource"></property>
+          </bean>
+      
+          <!--
+              开启事务注解驱动
+              会将使用@Transactional注解所标识的方法或类中所有的方法使用事务进行管理
+          -->
+          <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+      ```
+
+    - 标识 @Transactional 注解
+
+      1. 可以在方法上标识
+
+      2. 可以在类上标识
+
+         ```java
+             @Transactional(isolation = Isolation.READ_COMMITTED,propagation = Propagation.REQUIRED)
+             @Override
+             public void transfer(String outName, String inName, BigDecimal money) {
+                 accountDao.out(outName,money);
+                 int i=1/0;
+                 accountDao.in(inName,money);
+             }
+         }
+         ```
+
+      3. @Transactional 的属性：
+
+         - 设置只读：`readOnly = true`
+           - 当事务中的操作全是查询操作时，才可使用只读属性；对增删改查操作设置只读会抛出异常
+         - 设置事务超时时间：`timeout = 3`
+           - 在规定时间内未执行完事务，会强制回滚并抛出异常
+         - 设置事务回滚策略
+           - 不因某个异常回滚事务：`noRollbackFor = ArithmeticException.class`
+         - 设置事务隔离级别：`isolation = Isolation.READ_COMMITTED`
+           - 四种隔离级别
+             1. 读未提交：READ UNCOMMITTED
+             2. 读已提交：READ COMMITTED
+             3. 可重复读：REPEATABLE READ
+             4. 串行化：SERIALIZABLE，性能低下
+           - MySQL 中的默认隔离级别是 REPEATABLE READ ，并且在 MySQL 中改隔离级别解决了幻读的问题
+         - 设置事务的传播行为：
+           - `propagation = Propagation.REQUIRED`：使用调用本方法的方法的事务
+           - `propagation = Propagation.REQUIRES_NEW`：使用方法本身的事务
+
+  - 基于 XML 的声明式事务
+
+    - 引入依赖
+
+      ```xml
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.4</version>
+          </dependency>
+      ```
+
+    - 配置 xml
+
+      ```xml
+          <!--配置平台事务管理器-->
+          <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref="dataSource"></property>
+          </bean>
+          
+          <!--配置事务通知（给切点增加事务功能）-->
+          <tx:advice id="txAdvice" transaction-manager="transactionManager">
+              <!--设置事务的属性信息-->
+              <tx:attributes>
+                  <!--tx:method   对不同的切点方法进行事务参数配置  *代表任意方法-->
+                  <tx:method name="transfer" isolation="DEFAULT" propagation="REQUIRED" read-only="false"></tx:method>
+                  <tx:method name="get*" read-only="true"/>
+                  <tx:method name="query*" read-only="true"/>
+                  <tx:method name="*"/>
+              </tx:attributes>
+          </tx:advice>
+      
+          <!--配置事务的aop织入-->
+          <aop:config>
+              <!--抽取切点表达式-->
+              <aop:pointcut id="txPointcut" expression="execution(* com.lhk.service.Impl.*.*(..))"/>
+              <!--aop:advisor：配置事务切面-->
+              <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"></aop:advisor>
+          </aop:config>
+      ```
+
+      
+
+    
