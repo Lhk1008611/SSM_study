@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/Spring_TestDemo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Spring_TestDemo/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Spring_mvc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Spring_mvc/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_AOP/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_AOP/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_annotation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_annotation/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_exception/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_exception/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_interceptor/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_mvc_interceptor/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_tx/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_tx/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_tx_anno/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring_tx_anno/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

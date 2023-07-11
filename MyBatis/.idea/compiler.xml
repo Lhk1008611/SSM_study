@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Mybatis-quick" />
+        <module name="mybatis_multi" />
+        <module name="Mybatis_activeSQL" />
+        <module name="mybatis-3" />
+        <module name="Mybatis-1" />
+        <module name="Mybatis-2" />
+        <module name="mybatis_anno" />
+        <module name="mybatis_config" />
+        <module name="SSM" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="maven_j2se" target="1.7" />
+      <module name="Mybatis_1" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

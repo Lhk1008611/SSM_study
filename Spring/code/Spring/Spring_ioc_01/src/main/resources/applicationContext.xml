@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<!--无参构造产生对象-->
+<!--    <bean id="userDao" class="com.lhk.dao.daoimpl.UserDaoImpl" scope="singleton" init-method="init" destroy-method="destroy"></bean>-->
+<!--静态工厂产生对象-->
+<!--        <bean id="userDao" class="com.lhk.factory.StaticFactory" factory-method="getUserDao" ></bean>-->
+<!--动态工厂产生对象-->
+<!--        <bean id="factory" class="com.lhk.factory.DynamicFactory"></bean>-->
+<!--        <bean id="userDao" factory-bean="factory" factory-method="getUserDao"></bean>-->
+
+        <bean id="userDao" class="com.lhk.dao.daoimpl.UserDaoImpl">
+                <!-- 注入普通数据类型 -->
+                <property name="userName" value="lhk"></property>
+                <property name="age" value="22"></property>
+                <!-- 注入集合数据类型 -->
+                <property name="UserList" ref="users"></property>
+                <property name="userMap" ref="usermap"></property>
+
+                <property name="properties">
+                        <props>
+                                <prop key="prop1">ppp1</prop>
+                                <prop key="prop2">ppp2</prop>
+                                <prop key="prop3">ppp3</prop>
+                        </props>
+                </property>
+        </bean>
+        <bean id="user1" class="com.lhk.pojo.User">
+                <property name="name" value="&lt;Lhk&gt;"></property>
+                <property name="addr">
+                        <value>
+                                <![CDATA[<湖南>]]>
+                        </value>
+                </property>
+        </bean>
+        <bean id="user2" class="com.lhk.pojo.User">
+                <property name="name" value="TheMutents"></property>
+                <!--  给属性注入 null  -->
+                <property name="addr">
+                        <null />
+                </property>
+        </bean>
+
+        <util:list id="users">
+                <ref bean="user1"></ref>
+                <ref bean="user2"></ref>
+        </util:list>
+
+        <util:map id="usermap">
+                <entry key="u1" value-ref="user1"></entry>
+                <entry key="u2" value-ref="user2"></entry>
+        </util:map>
+<!--&lt;!&ndash; 通过与Service的set方法映射实现对Bean的依赖注入 &ndash;&gt;-->
+<!--        <bean id="userService" class="com.lhk.service.serviceImpl.UserServiceImpl">-->
+<!--                <property name="userDao" ref="userDao"></property>-->
+<!--        </bean>-->
+
+<!-- p 命名空间:xmlns:p="http://www.springframework.org/schema/p"-->
+<!--        <bean id="userService" class="com.lhk.service.serviceImpl.UserServiceImpl" p:userDao-ref="userDao"></bean>-->
+
+<!--通过与Service的构造器映射实现对Bean的依赖注入 -->
+        <bean id="userService" class="com.lhk.service.serviceImpl.UserServiceImpl" scope="singleton">
+                <constructor-arg name="userDao" ref="userDao"></constructor-arg>
+        </bean>
+
+        <import resource="applicationContext.User.xml"></import>
+        <import resource="applicationContext.Product.xml"></import>
+
+        <bean id="myBeanPostProcessor" class="com.lhk.pojo.MyBeanPostProcessor"></bean>
+
+        <!-- 直接拿到 User 类型的 bean -->
+        <bean id="userFactoryBean" class="com.lhk.factory.UserFactoryBean"></bean>
+</beans>

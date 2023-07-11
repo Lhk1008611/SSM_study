@@ -1,0 +1,8 @@
+com\lhk\dao\UserDao.class
+com\lhk\factory\DynamicFactory.class
+com\lhk\service\serviceImpl\UserServiceImpl.class
+com\lhk\dao\daoimpl\UserDaoImpl.class
+com\lhk\pojo\User.class
+com\lhk\service\UserService.class
+com\lhk\factory\StaticFactory.class
+com\lhk\controller\UserController.class

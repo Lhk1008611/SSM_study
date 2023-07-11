@@ -1,0 +1,6 @@
+com\lhk\config\WebInit.class
+com\lhk\config\SpringConfig.class
+com\lhk\interceptor\MyInterceptor2.class
+com\lhk\interceptor\MyInterceptor1.class
+com\lhk\config\WebConfig.class
+com\lhk\controller\TestController.class

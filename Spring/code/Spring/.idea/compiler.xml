@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring_annotation" />
+        <module name="Spring_ioc_02" />
+        <module name="spring_tx" />
+        <module name="spring_mvc_interceptor" />
+        <module name="Spring_ioc_01" />
+        <module name="Spring_mvc" />
+        <module name="spring_mvc_exception" />
+        <module name="spring_JDBC" />
+        <module name="spring_tx (2)" />
+        <module name="spring_tx (1)" />
+        <module name="spring_mvc_annotation" />
+        <module name="spring_autowire" />
+        <module name="spring_tx_anno" />
+        <module name="Spring_TestDemo" />
+        <module name="spring_AOP" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Sping_MVC_01" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

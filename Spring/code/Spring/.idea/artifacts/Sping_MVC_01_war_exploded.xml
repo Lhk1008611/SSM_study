@@ -1,0 +1,26 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Sping_MVC_01:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Sping_MVC_01_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="Sping_MVC_01" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.43" />
+          <element id="library" level="project" name="Maven: com.mchange:c3p0:0.9.5.2" />
+          <element id="library" level="project" name="Maven: com.mchange:mchange-commons-java:0.2.11" />
+          <element id="library" level="project" name="Maven: com.alibaba:druid:1.2.8" />
+          <element id="library" level="project" name="Maven: javax.annotation:javax.annotation-api:1.3.2" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context:5.3.9" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aop:5.3.9" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-beans:5.3.9" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-core:5.3.9" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-jcl:5.3.9" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-expression:5.3.9" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="Sping_MVC_01/web/Web" />
+    </root>
+  </artifact>
+</component>
