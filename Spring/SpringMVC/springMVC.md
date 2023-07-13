@@ -1142,5 +1142,98 @@
        </context-param>
      ```
 
+5. 在 pom.xml 文件中可以在 `properties`  标签中统一管理依赖版本号
+
+   ```xml
+     <properties>
+       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       <maven.compiler.source>1.7</maven.compiler.source>
+       <maven.compiler.target>1.7</maven.compiler.target>
+       <spring.version>5.0.5.RELEASE</spring.version>
+     </properties>
+     
+     <dependencies>
+     	<dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-context</artifactId>
+         <version>${spring.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <version>${spring.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-web</artifactId>
+         <version>${spring.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-webmvc</artifactId>
+         <version>${spring.version}</version>
+       </dependency>
+     </dependencies>
+   ```
+
+6. 有 mybatis 为何还需导入 `spring-jdbc`
+
+   - 因为 `spring-jdbc` 中有事务管理器，目的是为了导入事务管理器，更好的进行实物相关操作
+
+7. 在 web.xml 中配置 **spring 的编码过滤器**、配置**处理请求方式的过滤器**、配置 **spring 的前端控制器 `dispatcherServlet`** 、配置 **spring 的监听器**用于加载 spring 的配置文件、配置 **spring 配置文件的自定义位置和名称**
+
+   1. 在 springMVC.xml 中配置**组件扫描（controller）**、**视图解析器**、**默认 servlet 处理静态资源**、**mvc 注解驱动**、**视图控制器**、**文件上传解析器**，**拦截器**和**异常处理器**按需配置即可
+
+8. 在 spring.xml 中配置 **组件扫描（除 controller）**，配置**数据源**
+
+9. 整合 mybatis ，可以将一些卸载 mybatis.xml 文件中的配置写在 spring.xml 中
+
+   - 需要配置`SqlSessionFactory`交给 IOC 容器管理
+     1. 在 spring,xml 中配置 mybatis 的 `SqlSessionFactory`
+
+        ```xml
+            <!--
+            配置mybatis的SqlSessionFactory
+            其中SqlSessionFactoryBean是mybatis-spring包提供的SqlSessionFactory接口的一个实现
+            -->
+            <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+                <property name="dataSource" ref="dataSource"></property><!--加载数据源-->
+                <property name="configLocation" value="classpath:mybatis-config-spring.xml"></property><!--加载mybatis核心配置文件-->
+                <property name="mapperLocations" value="classpath:com.lhk.mapper/*.xml"></property><!--加载映射文件-->
+            </bean>
+        ```
+
+     2. 在 spring,xml 中配置 mybatis 的`SqlSessionFactoryBean`，可以直接在 spring 的 IOC 容器中获取 `SqlSessionFactory`
+
+        ```xml
+            <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+                <property name="dataSource" ref="dataSource"></property><!--加载数据源-->
+                <property name="configLocation" value="classpath:mybatis-config-spring.xml"></property><!--加载mybatis核心配置文件-->
+                <property name="mapperLocations" value="classpath:com.lhk.mapper/*.xml"></property><!--加载映射文件,只有 mapper 接口的包和映射文件的包不一致时需要设置-->
+            </bean>
+        ```
+
+   - 在 spring,xml 中配置 mapper 接口扫描，可以将指定包下所有的 mapper 接口通过 `SqlSession` 创建代理实现类对象，并交给 IOC 容器管理，这样可以直接在 service 层中注入 mapper 组件
+
+     ```xml
+         <!--扫描mapper相关接口所在的包 为mapper创建实现类-->
+         <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+             <property name="basePackage" value="com.lhk.mapper"></property>
+         </bean>
+     ```
+
+   - 配置**事务管理器**
+
+     ```xml
+         <!--声明式事式控制-->
+         <!--平台事务管理器-->
+         <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+             <property name="dataSource" ref="dataSource"></property><!--注入数据元-->
+         </bean>
+     
+         <!-- 开启事务的注解驱动 -->
+         <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+     ```
+
      
 
