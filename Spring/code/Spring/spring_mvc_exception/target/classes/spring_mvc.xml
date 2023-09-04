@@ -26,17 +26,17 @@
     <bean id="demoService" class="com.lhk.service.impl.DemoServiceImpl"></bean>
 
     <!--配置SpringMVC的异常处理器-->
-   <!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-        <property name="defaultErrorView" value="error"></property>
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+         <property name="defaultErrorView" value="error"></property>
 
-        <property name="exceptionMappings">
-            <map>
-                <entry key="java.lang.ClassCastException" value="error1"></entry>
-                <entry key="com.lhk.exception.MyException" value="error2"></entry>
-            </map>
-        </property>
-    </bean>-->
+         <property name="exceptionMappings">
+             <map>
+                 <entry key="java.lang.ClassCastException" value="error1"></entry>
+                 <entry key="com.lhk.exception.MyException" value="error2"></entry>
+             </map>
+         </property>
+     </bean>-->
 
-    <!--配置自定义的异常处理器-->
+     <!--配置自定义的异常处理器-->
     <bean class="com.lhk.resolver.MyExceptionResolver"></bean>
 </beans>

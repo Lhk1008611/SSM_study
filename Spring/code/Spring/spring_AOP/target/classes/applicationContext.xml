@@ -16,33 +16,21 @@
     <!--需要配置aop命名空间-->
     <aop:config>
         <!--声明切面-->
-        <aop:aspect ref="myAspect">
+        <aop:aspect ref="myAspect" order="1">
             <!--抽取切点表达式-->
             <aop:pointcut id="myPointcut" expression="execution(* com.lhk.aop.*.*(..))"/>
-            <!--切面：切点+通知-->
             <!--
-            pointcut="切点表达式"
-            切点表达式语法：
-            execution([访问修饰符] 返回值类型 包名.类名.方法名(参数))
-            访问修饰符可以不写
-            返回值类型、包名、类名、方法名可以使用*代表任意
-            包名与类名之间一个点.代表当前包下的类，两个点..表示当前包及其子包下的类
-            参数列表可以使用两个点..表示任意个数，任意类型的参数列表
-
             aop:before ： 前置增强（通知）
             aop:after-returning ：后置增强（通知）
             aop:around method ：环绕增强（通知）
             aop:after-throwing ： 异常抛出通知（增强）
             aop:after ： 最终通知（增强）
             -->
-<!--            <aop:before method="before" pointcut="execution(public void com.lhk.aop.Target.save())"></aop:before>-->
-<!--            <aop:before method="before" pointcut="execution(* com.lhk.aop.*.*(..))"></aop:before>-->
-<!--            <aop:after-returning method="afterReturning" pointcut="execution(* com.lhk.aop.*.*(..))"></aop:after-returning>-->
-<!--            <aop:around method="around" pointcut="execution(* com.lhk.aop.*.*(..))"></aop:around>-->
-<!--            <aop:after-throwing method="afterThrowing" pointcut="execution(* com.lhk.aop.*.*(..))"></aop:after-throwing>-->
-<!--            <aop:after method="after" pointcut="execution(* com.lhk.aop.*.*(..))"></aop:after>-->
+            <aop:before method="before" pointcut-ref="myPointcut"></aop:before>
+            <aop:after-returning method="afterReturning" pointcut-ref="myPointcut"></aop:after-returning>
+            <aop:after-throwing method="afterThrowing" pointcut-ref="myPointcut"></aop:after-throwing>
+            <aop:after method="afterReturning" pointcut-ref="myPointcut"></aop:after>
             <aop:around method="around" pointcut-ref="myPointcut"></aop:around>
-            <aop:after method="after" pointcut-ref="myPointcut"></aop:after>
         </aop:aspect>
     </aop:config>
 </beans>

@@ -40,23 +40,25 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
-    <!--配置通知（给切点增加事务功能）-->
+
+    <!--配置事务通知（给切点增加事务功能）-->
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--设置事务的属性信息-->
         <tx:attributes>
+            <!--tx:method：对不同的切点方法进行事务参数配置  *代表任意方法-->
+            <tx:method name="transfer" isolation="DEFAULT" propagation="REQUIRED" read-only="false"></tx:method>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
             <tx:method name="*"/>
         </tx:attributes>
     </tx:advice>
-<!--
 
-    &lt;!&ndash;配置事务的aop织入&ndash;&gt;
+    <!--配置事务的aop织入-->
     <aop:config>
-        &lt;!&ndash;aop:advisor：配置事务切面&ndash;&gt;
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.lhk.service.Impl.*.*(..))"></aop:advisor>
+        <!--抽取切点表达式-->
+        <aop:pointcut id="txPointcut" expression="execution(* com.lhk.service.Impl.*.*(..))"/>
+        <!--aop:advisor：配置事务切面-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"></aop:advisor>
     </aop:config>
-
--->
-
-
-
 
 </beans>

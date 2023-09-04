@@ -69,4 +69,8 @@
         <import resource="applicationContext.User.xml"></import>
         <import resource="applicationContext.Product.xml"></import>
 
+        <bean id="myBeanPostProcessor" class="com.lhk.pojo.MyBeanPostProcessor"></bean>
+
+        <!-- 直接拿到 User 类型的 bean -->
+        <bean id="userFactoryBean" class="com.lhk.factory.UserFactoryBean"></bean>
 </beans>
